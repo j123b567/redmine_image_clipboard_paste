@@ -169,6 +169,25 @@ function preparePasteEvents() {
 
     });
 
+    $('form').has('.wiki-edit, #attachments_fields').bind('submit', function(e) {
+        var $form = $(this),
+            $textarea = $form.find('.wiki-edit'),
+            value = $textarea.val(),
+            $attachments = $form.find("#attachments_fields span");
+
+        $attachments.each( function(i, attachment) {
+          var $attachment = $(attachment),
+              name = $attachment.find("input.filename").val(),
+              removeUrl = $attachment.find(".remove-upload").attr("href"),
+              match = removeUrl && removeUrl.match(/\/attachments\/([^\.js]+)/),
+              url = match && match[0];
+
+          value = value.replace("!" + name + "!", "!" + url + "/" + name + "!")
+        });
+
+        $textarea.val(value);
+    });
+
     uploadBlob = function (blob, uploadUrl, attachmentId, options) {
         var actualOptions = $.extend({
             loadstartEventHandler: $.noop,
