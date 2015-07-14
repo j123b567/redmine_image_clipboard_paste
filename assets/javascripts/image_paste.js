@@ -173,21 +173,25 @@ function preparePasteEvents() {
 
     $('form').has('.wiki-edit, #attachments_fields').bind('submit', function(e) {
         var $form = $(this),
-            $textarea = $form.find('.wiki-edit'),
-            value = $textarea.val(),
+            $textareas = $form.find('.wiki-edit'),
             $attachments = $form.find("#attachments_fields span");
 
-        $attachments.each( function(i, attachment) {
-          var $attachment = $(attachment),
-              name = $attachment.find("input.filename").val(),
-              removeUrl = $attachment.find(".remove-upload").attr("href"),
-              match = removeUrl && removeUrl.match(/\/attachments\/([^\.js]+)/),
-              url = match && match[0];
+        $textareas.each( function(i, textarea) {
+          var $textarea = $(textarea),
+              value = $textarea.val();
 
-          value = value.replace("!" + name + "!", "!" + url + "/" + name + "!")
+          $attachments.each( function(i, attachment) {
+            var $attachment = $(attachment),
+                name = $attachment.find("input.filename").val(),
+                removeUrl = $attachment.find(".remove-upload").attr("href"),
+                match = removeUrl && removeUrl.match(/\/attachments\/([^\.js]+)/),
+                url = match && match[0];
+
+            value = value.replace("!" + name + "!", "!" + url + "/" + name + "!")
+          });
+
+          $textarea.val(value);
         });
-
-        $textarea.val(value);
     });
 
     uploadBlob = function (blob, uploadUrl, attachmentId, options) {
