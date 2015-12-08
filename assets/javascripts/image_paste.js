@@ -163,8 +163,7 @@ $( document ).ready(function() {
                         }
                     }
                 }
-            }
-        });
+            });
     });
 
     $('form').has('.wiki-edit, #attachments_fields').bind('submit', function(e) {
