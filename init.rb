@@ -1,5 +1,5 @@
 require 'redmine'
-require 'image_clipboard_paste/hooks'
+require 'layout_hook'
 
 Redmine::Plugin.register :redmine_image_clipboard_paste do
   name 'Image Clipboard Paste'

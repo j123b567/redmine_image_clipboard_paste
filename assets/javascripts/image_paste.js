@@ -144,23 +144,49 @@ function processClipboardItems(clipboardData, editElement, event) {
 
 $( document ).ready(function() {
     $('.wiki-edit').each(function(){
-        this.addEventListener('drop', function (e) {
-            for (var file = 0; file<e.dataTransfer.files.length; file++)
-            {
-                if (e.dataTransfer.files[file].type.indexOf('image/') != -1)
-                {
-                    var timestamp = Math.round(+new Date()/1000);
-                    var name = 'screenshot_'+addFile.nextAttachmentId+'_'+timestamp+'_'+e.dataTransfer.files[file].name.replace(/[ !"#%&\'()*:<=>?\[\\\]|]/g, '_');
-                    var blob = e.dataTransfer.files[file].slice();
-                    blob.name = name;
-                    uploadAndAttachFiles([blob], $('input:file.file_selector'));
-                    pasteImageName(this, name);
+            this.addEventListener('drop', function (e) {
+                if(typeof addFile === "function") {
+                    for (var file = 0; file<e.dataTransfer.files.length; file++)
+                    {
+                        if (e.dataTransfer.files[file].type.indexOf('image/') != -1)
+                        {
+                            var timestamp = Math.round(+new Date()/1000);
+                            var name = 'screenshot_'+addFile.nextAttachmentId+'_'+timestamp+'_'+e.dataTransfer.files[file].name.replace(/[ !"#%&\'()*:<=>?\[\\\]|]/g, '_');
+                            var blob = e.dataTransfer.files[file].slice();
+                            blob.name = name;
+                            uploadAndAttachFiles([blob], $('input:file.file_selector'));
+                            pasteImageName(this, name);
 
-                    e.preventDefault();
-                    e.stopPropagation();
-                    break;
+                            e.preventDefault();
+                            e.stopPropagation();
+                            break;
+                        }
+                    }
                 }
             }
+        });
+    });
+
+    $('form').has('.wiki-edit, #attachments_fields').bind('submit', function(e) {
+        var $form = $(this),
+            $textareas = $form.find('.wiki-edit'),
+            $attachments = $form.find("#attachments_fields span");
+
+        $textareas.each( function(i, textarea) {
+          var $textarea = $(textarea),
+              value = $textarea.val();
+
+          $attachments.each( function(i, attachment) {
+            var $attachment = $(attachment),
+                name = $attachment.find("input.filename").val(),
+                removeUrl = $attachment.find(".remove-upload").attr("href"),
+                match = removeUrl && removeUrl.match(/\/attachments\/([^\.js]+)/),
+                url = match && match[0];
+
+            value = value.replace("!" + name + "!", "!" + url + "/" + name + "!")
+          });
+
+          $textarea.val(value);
         });
     });
 
